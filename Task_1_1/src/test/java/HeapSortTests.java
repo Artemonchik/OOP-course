@@ -11,7 +11,7 @@ public class HeapSortTests {
         int[] sortedArr1 = {-5, 0, 1, 4, 5};
         HeapSort.heapSort(arr1, arr1.length);
         assertArrayEquals(sortedArr1, arr1);
-
+        int t;
         int[] arr2 = {324, 13, 213, 67, 0, 0, 0, -123, -345, -34};
         int[] sortedArr2 = {-345, -123, -34, 0, 0, 0, 13, 67, 213, 324};
         HeapSort.heapSort(arr2, arr2.length);
