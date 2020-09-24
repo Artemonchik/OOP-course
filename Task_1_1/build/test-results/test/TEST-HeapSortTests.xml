@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="HeapSortTests" tests="3" skipped="0" failures="0" errors="0" timestamp="2020-09-17T15:04:33" hostname="DESKTOP-FRACDVB" time="0.005">
-  <properties/>
-  <testcase name="simpleTests" classname="HeapSortTests" time="0.004"/>
-  <testcase name="testWithLimitIntegerValues" classname="HeapSortTests" time="0.0"/>
-  <testcase name="emptyArrayTest" classname="HeapSortTests" time="0.0"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
