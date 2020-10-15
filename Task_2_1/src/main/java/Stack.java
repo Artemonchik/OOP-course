@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TransferQueue;
 
-public class Stack<Type> implements Iterator<Type> {
+public class Stack<Type> implements Iterable<Type> , Iterator<Type>{
     private Type[] arr;
     private int end;
 
@@ -68,5 +68,10 @@ public class Stack<Type> implements Iterator<Type> {
             throw new NoSuchElementException("Stack is empty");
         }
         return pop();
+    }
+
+    @Override
+    public Iterator<Type> iterator() {
+        return this;
     }
 }
