@@ -39,6 +39,8 @@ public class Stack<Type> implements Iterable<Type> , Iterator<Type>{
      * @return top of the stack
      */
     public Type pop() {
+        if(end == 0)
+            throw new NoSuchElementException("Stack is empty");
         return arr[--end];
     }
 
