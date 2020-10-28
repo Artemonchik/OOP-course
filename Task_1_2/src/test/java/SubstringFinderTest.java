@@ -19,8 +19,8 @@ public class SubstringFinderTest {
         fw.close();
 
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream("input.txt"), StandardCharsets.UTF_8);
-        ArrayList<Integer> result = SubstringFinder.findSubstring(inputStreamReader, "nnn".toCharArray());
-        Integer[] expectedResult = new Integer[]{0, 1, 2, 13, 14, 18, 19, 23};
+        ArrayList<Long> result = SubstringFinder.findSubstring(inputStreamReader, "nnn".toCharArray());
+        Long[] expectedResult = new Long[]{0L, 1L, 2L, 13L, 14L, 18L, 19L, 23L};
         assertArrayEquals(expectedResult, result.toArray());
         inputStreamReader.close();
 
@@ -37,8 +37,8 @@ public class SubstringFinderTest {
         fw.close();
 
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream("input.txt"), StandardCharsets.UTF_8);
-        ArrayList<Integer> result = SubstringFinder.findSubstring(inputStreamReader, "ara".toCharArray());
-        Integer[] expectedResult = new Integer[]{0, 2, 4, 8, 10, 14, 17};
+        ArrayList<Long> result = SubstringFinder.findSubstring(inputStreamReader, "ara".toCharArray());
+        Long[] expectedResult = new Long[]{0L, 2L, 4L, 8L, 10L, 14L, 17L};
         assertArrayEquals(expectedResult, result.toArray());
         inputStreamReader.close();
 
@@ -55,7 +55,7 @@ public class SubstringFinderTest {
         fw.close();
 
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream("input.txt"), StandardCharsets.UTF_8);
-        ArrayList<Integer> result = SubstringFinder.findSubstring(inputStreamReader, "ssdaara".toCharArray());
+        ArrayList<Long> result = SubstringFinder.findSubstring(inputStreamReader, "ssdaara".toCharArray());
         Integer[] expectedResult = new Integer[]{};
         assertArrayEquals(expectedResult, result.toArray());
         inputStreamReader.close();
@@ -70,17 +70,17 @@ public class SubstringFinderTest {
         String str = "The mailbox has been filled with one resounding question: When will Billy " +
                 "Herrington go up against Mark Wolff? Well your prayers have been answered! The result is one".repeat(30) +
                 " of our most visually stunning productions yet. First wiry young newcomer Nick Steel eggs Billy on. \n".repeat(30);
-        Integer[] expectedResult = new Integer[(int) (20L * 1024 * 1024 * 1024 / str.length())];
-        for (int i = 0; i < (int) (20L * 1024 * 1024 * 1024 / str.length()); i++) {
+        Long[] expectedResult = new Long[(int) (20L * 1024 * 1024 * 1024 / str.length())];
+        for (long i = 0; i < (int) (20L * 1024 * 1024 * 1024 / str.length()); i++) {
             if (i % 10000000 == 0)
                 fw.flush();
             fw.write(str);
-            expectedResult[i] = ((int) (i * str.length()));
+            expectedResult[(int)i] = (i * str.length());
         }
         fw.close();
 
         InputStreamReader inputStreamReader = new InputStreamReader(new FileInputStream("input.txt"), StandardCharsets.UTF_8);
-        ArrayList<Integer> result = SubstringFinder.findSubstring(inputStreamReader, "The mailbox has been filled with".toCharArray());
+        ArrayList<Long> result = SubstringFinder.findSubstring(inputStreamReader, "The mailbox has been filled with".toCharArray());
 
 
         assertArrayEquals(expectedResult, result.toArray());
