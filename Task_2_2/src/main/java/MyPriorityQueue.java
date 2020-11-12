@@ -1,10 +1,13 @@
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import com.sun.jdi.Value;
 import javafx.util.Pair;
 
 public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
-        implements Iterable<Pair<KeyT, ValueT>>, Iterator<Pair<KeyT, ValueT>> {
+        implements Iterable<Pair<KeyT, ValueT>>, Iterator<Pair<KeyT, ValueT>>, Spliterator<Pair<KeyT, ValueT>> {
 
     ArrayList<Pair<KeyT, ValueT>> array = new ArrayList<>(5);
 
@@ -12,7 +15,7 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
      * This method sift up element in heap: it compares this element with the parent node and if elem is greater then
      * method swaps these nodes
      *
-     * @param idx   index of node we want to sift up
+     * @param idx index of node we want to sift up
      */
     private void siftUp(int idx) {
         while (array.get(idx).getKey().compareTo(array.get((idx - 1) / 2).getKey()) > 0 && idx > 0) {
@@ -62,12 +65,12 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
     }
 
     /**
-     * @param key key of the pair
+     * @param key   key of the pair
      * @param value value of the pair
      * @throws NullPointerException if key or value are null
      */
-    public void insert(KeyT key, ValueT value) throws NullPointerException{
-        if(key == null || value == null){
+    public void insert(KeyT key, ValueT value) throws NullPointerException {
+        if (key == null || value == null) {
             throw new NullPointerException("key or value arguments are null");
         }
         Pair<KeyT, ValueT> pair = new Pair<>(key, value);
@@ -79,8 +82,8 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
      * @return the maximum value of the priority queue
      * @throws ArrayStoreException if priority queue is empty
      */
-    public Pair<KeyT, ValueT> extractMaximum() throws ArrayStoreException{
-        if(!hasNext()){
+    public Pair<KeyT, ValueT> extractMaximum() throws ArrayStoreException {
+        if (!hasNext()) {
             throw new ArrayStoreException("Stack is empty");
         }
         return popElement();
@@ -92,6 +95,16 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
     }
 
     @Override
+    public void forEach(Consumer<? super Pair<KeyT, ValueT>> action) {
+        array.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Pair<KeyT, ValueT>> spliterator() {
+        return array.spliterator();
+    }
+
+    @Override
     public boolean hasNext() {
         return array.size() > 0;
     }
@@ -99,5 +112,34 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
     @Override
     public Pair<KeyT, ValueT> next() {
         return extractMaximum();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super Pair<KeyT, ValueT>> action) {
+        array.spliterator().forEachRemaining(action);
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super Pair<KeyT, ValueT>> action) {
+        return array.spliterator().tryAdvance(action);
+    }
+
+    @Override
+    public Spliterator<Pair<KeyT, ValueT>> trySplit() {
+        return array.spliterator().trySplit();
+    }
+
+    @Override
+    public long estimateSize() {
+        return array.spliterator().estimateSize();
+    }
+
+    @Override
+    public int characteristics() {
+        return array.spliterator().characteristics();
+    }
+
+    public Stream<Pair<KeyT, ValueT>> stream() {
+        return StreamSupport.stream(this.spliterator(), false);
     }
 }

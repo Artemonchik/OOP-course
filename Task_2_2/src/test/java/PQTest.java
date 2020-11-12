@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import javafx.util.Pair;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 public class PQTest {
     @Test
@@ -76,5 +78,14 @@ public class PQTest {
             assertEquals(new Pair<Integer, String>(i, "mew: " + i), elem);
             i--;
         }
+    }
+    @Test
+    public void testStream(){
+        MyPriorityQueue<Integer, String> queue = new MyPriorityQueue<>();
+        queue.insert(200, "dog");
+        queue.insert(10, "man");
+        assertEquals(Optional.of(200), queue.stream().map(Pair::getKey).max(Integer::compareTo));
+        assertEquals(Optional.of(200), queue.stream().map(Pair::getKey).max(Integer::compareTo));
+        assertEquals( Optional.of(10),queue.stream().map(Pair::getKey).min(Integer::compareTo));
     }
 }
