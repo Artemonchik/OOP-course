@@ -12,13 +12,13 @@ public class PQTest {
         MyPriorityQueue<Integer, String> queue = new MyPriorityQueue<>();
         queue.insert(200, "dog");
         queue.insert(10, "man");
-        assertEquals(new Pair<>(10, "man"), queue.extractMin());
+        assertEquals(new Pair<>(200, "dog"), queue.extractMaximum());
 
         queue.insert(5, "penguin");
         queue.insert(500, "parrot");
-        assertEquals(new Pair<>(5, "penguin"), queue.extractMin());
-        assertEquals(new Pair<>(200, "dog"), queue.extractMin());
-        assertEquals(new Pair<>(500, "parrot"), queue.extractMin());
+        assertEquals(new Pair<>(500, "parrot"), queue.extractMaximum());
+        assertEquals(new Pair<>(10, "man"), queue.extractMaximum());
+        assertEquals(new Pair<>(5, "penguin"), queue.extractMaximum());
     }
 
     @Test
@@ -30,12 +30,12 @@ public class PQTest {
         queue.insert(10, "man");
         queue.insert(200, "dog");
         queue.insert(10, "man");
-        assertEquals(new Pair<>(10, "man"), queue.extractMin());
-        assertEquals(new Pair<>(10, "man"), queue.extractMin());
-        assertEquals(new Pair<>(10, "man"), queue.extractMin());
-        assertEquals(new Pair<>(200, "dog"), queue.extractMin());
-        assertEquals(new Pair<>(200, "dog"), queue.extractMin());
-        assertEquals(new Pair<>(200, "dog"), queue.extractMin());
+        assertEquals(new Pair<>(200, "dog"), queue.extractMaximum());
+        assertEquals(new Pair<>(200, "dog"), queue.extractMaximum());
+        assertEquals(new Pair<>(200, "dog"), queue.extractMaximum());
+        assertEquals(new Pair<>(10, "man"), queue.extractMaximum());
+        assertEquals(new Pair<>(10, "man"), queue.extractMaximum());
+        assertEquals(new Pair<>(10, "man"), queue.extractMaximum());
     }
 
     @Test
@@ -43,10 +43,10 @@ public class PQTest {
         MyPriorityQueue<Integer, String> queue = new MyPriorityQueue<>();
         queue.insert(200, "dog");
         queue.insert(10, "man");
-        queue.extractMin();
-        queue.extractMin();
+        queue.extractMaximum();
+        queue.extractMaximum();
         try {
-            queue.extractMin();
+            queue.extractMaximum();
             fail("There should be NoSuchElementException error");
         } catch (ArrayStoreException ignored) {
 
@@ -60,8 +60,8 @@ public class PQTest {
         for (int i = RANGE; i > -RANGE; i--) {
             queue.insert(i, "Meeeew: " + i);
         }
-        for (int i = -RANGE + 1; i <= RANGE; i++) {
-            assertEquals(new Pair<>(i, "Meeeew: " + i), queue.extractMin());
+        for (int i = RANGE; i > -RANGE; i--) {
+            assertEquals(new Pair<>(i, "Meeeew: " + i), queue.extractMaximum());
         }
     }
 
@@ -71,10 +71,10 @@ public class PQTest {
         for (int i = 9; i >= 0; i--) {
             queue.insert(i, "mew: " + i);
         }
-        int i = 0;
+        int i = 9;
         for (Pair<Integer, String> elem : queue) {
             assertEquals(new Pair<Integer, String>(i, "mew: " + i), elem);
-            i++;
+            i--;
         }
     }
 }
