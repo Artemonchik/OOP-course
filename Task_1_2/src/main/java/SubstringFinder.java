@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.ArrayList;
 
+import static java.lang.Integer.max;
+
 public class SubstringFinder {
     /**
      * Finds the indices of the occurrence of a substring {@param searchParam} in {@param file}
@@ -19,34 +21,46 @@ public class SubstringFinder {
         }
 
         ArrayList<Long> indexes = new ArrayList<>();
-        char[] buf = new char[searchParam.length * 2];
-        int paramLen = searchParam.length;
-        long initialPosInFile = -paramLen;
-        while (true) {
-            boolean exitFlag = false;
-            int result = file.read(buf, paramLen, paramLen);
-            if (result != paramLen) {
-                exitFlag = true;
-                if (result == -1) {
-                    result = 0;
+        char[] buf = new char[searchParam.length * 2]; // create buffer with size of len(searchParam) * 2
+        int paramLen = searchParam.length; // lenght of the parameter
+
+        long posInFile = 0; // current position in file to return indices
+        int readLen = file.read(buf, paramLen, paramLen);
+        if (readLen < paramLen) {
+            return indexes;
+        }
+        boolean lastScan = false;
+        do {
+            System.arraycopy(buf, paramLen, buf, 0, paramLen);
+            if (readLen == paramLen) {
+
+                readLen = file.read(buf, paramLen, paramLen);
+                if(readLen < paramLen){
+                    readLen = max(readLen, 0);
+                    readLen++;
+                    lastScan = true;
                 }
-                buf[paramLen + result] = '\u0080'; // illegal character in UTF-8 encoding
             }
-            m:
-            for (int i = 0; i < paramLen; i++) {
+
+            for (int i = 0; i < readLen; i++) {
+                boolean isSubStr = false;
                 for (int j = 0; j < paramLen; j++) {
-                    if (searchParam[j] != buf[i + j]) {
-                        continue m;
+                    if (buf[i + j] != searchParam[j]) {
+                        break;
+                    }
+                    if (j == paramLen - 1) {
+                        isSubStr = true;
+                        break;
                     }
                 }
-                indexes.add(initialPosInFile + i);
+                if (isSubStr) {
+                    indexes.add((long) posInFile);
+                }
+                posInFile++;
             }
-            if (exitFlag) {
-                break;
-            }
-            System.arraycopy(buf, paramLen, buf, 0, paramLen);
-            initialPosInFile += paramLen;
-        }
+        } while (!lastScan);
+
         return indexes;
     }
+
 }
