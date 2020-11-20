@@ -6,11 +6,17 @@ import java.util.stream.StreamSupport;
 import com.sun.jdi.Value;
 import javafx.util.Pair;
 
-public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
-        implements Iterable<Pair<KeyT, ValueT>>, Iterator<Pair<KeyT, ValueT>>, Spliterator<Pair<KeyT, ValueT>> {
+public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT> implements Iterable<Pair<KeyT, ValueT>>{
 
-    ArrayList<Pair<KeyT, ValueT>> array = new ArrayList<>(5);
+    private ArrayList<Pair<KeyT, ValueT>> array;
 
+    public MyPriorityQueue(){
+        array = new ArrayList<>(5);
+    }
+
+    private MyPriorityQueue(ArrayList<Pair<KeyT, ValueT>> array){
+        this.array = (ArrayList<Pair<KeyT, ValueT>>) array.clone();
+    }
     /**
      * This method sift up element in heap: it compares this element with the parent node and if elem is greater then
      * method swaps these nodes
@@ -91,55 +97,50 @@ public class MyPriorityQueue<KeyT extends Comparable<KeyT>, ValueT>
 
     @Override
     public Iterator<Pair<KeyT, ValueT>> iterator() {
-        return array.iterator();
+
+        return new Iterator<Pair<KeyT, ValueT>>() {
+            MyPriorityQueue<KeyT, ValueT> temp = new MyPriorityQueue<KeyT, ValueT>(array);
+            @Override
+            public boolean hasNext() {
+                return temp.hasNext();
+            }
+
+            @Override
+            public Pair<KeyT, ValueT> next() {
+                return temp.extractMaximum();
+            }
+        };
     }
 
-    @Override
-    public void forEach(Consumer<? super Pair<KeyT, ValueT>> action) {
-        array.forEach(action);
-    }
-
-    @Override
-    public Spliterator<Pair<KeyT, ValueT>> spliterator() {
-        return array.spliterator();
-    }
-
-    @Override
     public boolean hasNext() {
         return array.size() > 0;
     }
 
-    @Override
-    public Pair<KeyT, ValueT> next() {
-        return extractMaximum();
-    }
-
-    @Override
-    public void forEachRemaining(Consumer<? super Pair<KeyT, ValueT>> action) {
-        array.spliterator().forEachRemaining(action);
-    }
-
-    @Override
-    public boolean tryAdvance(Consumer<? super Pair<KeyT, ValueT>> action) {
-        return array.spliterator().tryAdvance(action);
-    }
-
-    @Override
-    public Spliterator<Pair<KeyT, ValueT>> trySplit() {
-        return array.spliterator().trySplit();
-    }
-
-    @Override
-    public long estimateSize() {
-        return array.spliterator().estimateSize();
-    }
-
-    @Override
-    public int characteristics() {
-        return array.spliterator().characteristics();
-    }
-
     public Stream<Pair<KeyT, ValueT>> stream() {
-        return StreamSupport.stream(this.spliterator(), false);
+        Spliterator<Pair<KeyT, ValueT>> spliterator = new Spliterator<Pair<KeyT, ValueT>>() {
+            ArrayList<Pair<KeyT,ValueT>> temp = (ArrayList<Pair<KeyT, ValueT>>) array.clone();
+            @Override
+            public boolean tryAdvance(Consumer<? super Pair<KeyT, ValueT>> action) {
+                return temp.spliterator().tryAdvance(action);
+            }
+
+            @Override
+            public Spliterator<Pair<KeyT, ValueT>> trySplit() {
+                return temp.spliterator().trySplit();
+            }
+
+            @Override
+            public long estimateSize() {
+                return temp.spliterator().estimateSize();
+            }
+
+            @Override
+            public int characteristics() {
+                return temp.spliterator().characteristics();
+            }
+
+        };
+
+        return StreamSupport.stream(spliterator(), false);
     }
 }
