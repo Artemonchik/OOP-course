@@ -83,43 +83,43 @@ public class CalendarTest {
     public void incorrectParamsTest(){
         try {
             Calendar cal = new Calendar(2020, 2, 30);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException err){
-            assertEquals("Day must be between [1, 29] for this specified month", err.getMessage());
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
+
         }
 
         try {
             Calendar cal = new Calendar(-5, 2, 3);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException err){
-            assertEquals("Year must be between [0, MAX_INT/2]", err.getMessage());
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
+
         }
 
         try {
             Calendar cal = new Calendar(Integer.MAX_VALUE/2 + 1, 2, 3);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException err){
-            assertEquals("Year must be between [0, MAX_INT/2]", err.getMessage());
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
+
         }
 
         try {
             Calendar cal = new Calendar(3000, 0, 3);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException err){
-            assertEquals("Month must be between [1, 12]", err.getMessage());
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
+
         }
 
         try {
             Calendar cal = new Calendar(3000, 13, 3);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException err){
-            assertEquals("Month must be between [1, 12]", err.getMessage());
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
+
         }
 
         try {
             Calendar cal = new Calendar(-5);
-            fail("There must be DataValidateException");
-        }catch (DataValidationException ignored){
+            fail("There must be IllegalArgumentException");
+        }catch (IllegalArgumentException ignored){
 
         }
     }

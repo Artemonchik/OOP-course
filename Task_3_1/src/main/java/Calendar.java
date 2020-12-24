@@ -47,16 +47,16 @@ public class Calendar {
 
     public Calendar(int year, int month, int day) {
         if (year < 0 || year > Integer.MAX_VALUE / 2) {
-            throw new DataValidationException("Year must be between [0, MAX_INT/2]");
+            throw new IllegalArgumentException("Year must be between [0, MAX_INT/2]");
         }
         this.year = year;
         if (month < 1 || month > 12) {
-            throw new DataValidationException("Month must be between [1, 12]");
+            throw new IllegalArgumentException("Month must be between [1, 12]");
         }
         this.month = month;
         setLeapState();
         if (day < 1 || day > dayNumsInMonth[month]) {
-            throw new DataValidationException(
+            throw new IllegalArgumentException(
                     String.format("Day must be between [1, %d] for this specified month", dayNumsInMonth[month]));
         }
         this.day = day;
@@ -68,7 +68,7 @@ public class Calendar {
 
     public Calendar(int days) {
         if (days < 0) {
-            throw new DataValidationException("Days must be non negative value");
+            throw new IllegalArgumentException("Days must be non negative value");
         }
         year = 1;
         year += (days - 1) / (400 * 365 + 97) * 400;
