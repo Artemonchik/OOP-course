@@ -5,9 +5,10 @@ public class FinderThread<T> extends Thread {
     Iterator<T> iter;
     Predicate<T> comp;
     int threadNumbers;
-    boolean wasFound;
+    Finder.Bool wasFound;
 
-    FinderThread(Iterator<T> iter, Predicate<T> comp, int threadNumbers, boolean wasFound) {
+    FinderThread(Iterator<T> iter, Predicate<T> comp, int threadNumbers, Finder.Bool wasFound) {
+        super();
         this.iter = new Iterator<T>() {
             int idx = 0;
 
@@ -26,7 +27,8 @@ public class FinderThread<T> extends Thread {
             @Override
             public T next() {
                 if (this.hasNext()) {
-                    return this.next();
+                    idx++;
+                    return iter.next();
                 }
                 return null;
             }
@@ -37,7 +39,7 @@ public class FinderThread<T> extends Thread {
     }
 
     private boolean find() {
-        while (iter.hasNext() && !wasFound) {
+        while (iter.hasNext() && !wasFound.getValue()) {
             T elem = iter.next();
             if (comp.test(elem)) {
                 return true;
@@ -48,8 +50,8 @@ public class FinderThread<T> extends Thread {
 
     public void run() {
         boolean result = find();
-        if(result){
-            wasFound = true;
+        if (result) {
+            wasFound.setValue(true);
         }
     }
 }

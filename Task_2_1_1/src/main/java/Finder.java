@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
@@ -13,8 +12,8 @@ public class Finder<T> {
         return false;
     }
 
-    public boolean find(Iterable<T> list, Predicate<T> pred, int numberOfThreads) throws InterruptedException {
-        boolean wasFind = false;
+    public boolean find(Iterable<T> list, Predicate<T> pred, int numberOfThreads)  {
+        Bool wasFind = new Bool();
         Thread[] threads = new Thread[numberOfThreads];
 
         for (int i = 0; i < numberOfThreads; i++) {
@@ -28,12 +27,38 @@ public class Finder<T> {
             threads[i].start();
         }
         for (int i = 0; i < numberOfThreads; i++) {
-            threads[i].join();
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                if(wasFind.getValue()){
+                    return true;
+                }
+                e.printStackTrace();
+                throw new Error("Some thread was interrupted");
+            }
         }
-        return wasFind;
+        return wasFind.getValue();
     }
 
     public boolean findParallels(Iterable<T> iter, Predicate<T> pred) {
-        return StreamSupport.stream(iter.spliterator(), true).anyMatch(pred);
+        return StreamSupport.stream(iter.spliterator(), false).parallel().anyMatch(pred);
+    }
+
+    public static class Bool{
+        boolean value;
+        Bool(){
+            this(false);
+        }
+        Bool(boolean value){
+            this.value = value;
+        }
+
+        public boolean getValue() {
+            return value;
+        }
+
+        public void setValue(boolean value) {
+            this.value = value;
+        }
     }
 }
