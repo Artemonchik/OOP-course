@@ -1,0 +1,3 @@
+enum WorkingState {
+    WORK, STOP
+}
