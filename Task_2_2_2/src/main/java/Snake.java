@@ -1,28 +1,62 @@
-package Controllers;
-
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static java.lang.Integer.max;
+import static java.lang.Integer.min;
+
 public class Snake {
     private volatile Direction headDirection;
+    private volatile Direction newDirection;
     private final int M;
     private final int N;
     protected Cell[][] map;
     private Coords food;
     private LinkedList<Coords> snake;
+    private int numberOfWalls = 5;
+    HashMap<Cell, Integer> score = new HashMap<>();
 
     public Snake(int M, int N) {
-        headDirection = Direction.RIGHT;
+        newDirection = headDirection = Direction.RIGHT;
         this.M = M;
         this.N = N;
         map = new Cell[M][N];
         clearField();
+        initScore();
+        makeWalls();
         snake = new LinkedList<>();
         snake.addFirst(Coords.randomCoords(0, 0, M, N));
         Coords head = getHead();
         map[head.getY()][head.getX()] = Cell.SNAKE;
         regenFood();
+    }
+
+    private void makeWalls() {
+        for (int i = 0; i < numberOfWalls / 2; i++) {
+            Coords coords = Coords.randomCoords(0, 0, M - 1,  N- 1);
+            Coords coords1 = Coords.randomCoords(0, 0, M - 1, N - 1);
+            int y, x1, x2;
+            y = coords.getY();
+            x1 = min(coords.getX(), coords1.getX());
+            x2 = max(coords.getX(), coords1.getX());
+//            System.out.format("%d %d %d\n",y , x1, x2);
+            for(int j = x1; j < x2; j++){
+                map[y][j] = Cell.WALL;
+            }
+        }
+        for (int i = 0; i < numberOfWalls - numberOfWalls / 2; i++) {
+            Coords coords = Coords.randomCoords(0, 0, M - 1,  N- 1);
+            Coords coords1 = Coords.randomCoords(0, 0, M - 1, N - 1);
+            int x, y1, y2;
+            x = coords.getX();
+            y1 = min(coords.getY(), coords1.getY());
+            y2 = max(coords.getY(), coords1.getY());
+//            System.out.format("%d %d %d\n",y , x1, x2);
+            for(int j = y1; j < y2; j++){
+                map[j][x] = Cell.WALL;
+            }
+        }
     }
 
     private Coords getHead() {
@@ -34,17 +68,53 @@ public class Snake {
     }
 
     public boolean makeStep() {
+        headDirection = newDirection;
         if (isCrashedIntoTheBoardOnNextStep()) {
             return true;
         }
-        moveHead();
-        removeTail();
+        if (isCrashedIntoItselfs()) {
+            return true;
+        }
+        if(isCrashedIntoWall()){
+            return true;
+        }
+        Coords nextCoords = new Coords(getHead().getY() + headDirection.getY(), getHead().getX() + headDirection.getX());
+        Cell nextCell = map[nextCoords.getY()][nextCoords.getX()];
+        if (nextCell == Cell.APPLE ||
+                nextCell == Cell.BANANA ||
+                nextCell == Cell.SWEET) {
+            score.put(nextCell, score.get(nextCell) + 1);
+            moveHead();
+            regenFood();
+        } else if (nextCell == Cell.NOTHING) {
+            moveHead();
+            removeTail();
+        }
+
+
+        return false;
+    }
+
+    private boolean isCrashedIntoWall() {
+        Coords head = getHead();
+        if (map[head.getY() + headDirection.getY()][head.getX() + headDirection.getX()] == Cell.WALL) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCrashedIntoItselfs() {
+        Coords head = getHead();
+        if (map[head.getY() + headDirection.getY()][head.getX() + headDirection.getX()] == Cell.SNAKE) {
+            return true;
+        }
         return false;
     }
 
     private void moveHead() {
-        snake.addFirst(new Coords(getHead().getY() + headDirection.getY(), getHead().getX() + headDirection.getX()));
         map[getHead().getY()][getHead().getX()] = Cell.SNAKE;
+        snake.addFirst(new Coords(getHead().getY() + headDirection.getY(), getHead().getX() + headDirection.getX()));
+        map[getHead().getY()][getHead().getX()] = Cell.SNAKE_HEAD;
     }
 
     private void removeTail() {
@@ -73,16 +143,22 @@ public class Snake {
         Coords head = getHead();
         boolean crashedLeft = head.getX() == 0 && headDirection == Direction.LEFT;
         boolean crashedRight = head.getX() == N - 1 && headDirection == Direction.RIGHT;
-        boolean crashedTop = head.getY() == 0 && headDirection == Direction.DOWN;
+        boolean crashedTop = head.getY() == 0 && headDirection == Direction.UP;
         boolean crashedBottom = head.getY() == M - 1 && headDirection == Direction.DOWN;
         return crashedLeft || crashedBottom || crashedTop || crashedRight;
     }
 
+    private void initScore() {
+        for (Cell cell : Cell.values()) {
+            score.put(cell, 0);
+        }
+    }
+
     public void setDirection(Direction newDirection) {
-        if (headDirection.getOppositeDirection() == newDirection) {
+        if (this.headDirection.getOppositeDirection() == newDirection && !(snake.size() == 1)) {
             return;
         }
-        headDirection = newDirection;
+        this.newDirection = newDirection;
     }
 }
 
@@ -158,7 +234,9 @@ enum Cell {
     BANANA,
     APPLE,
     SWEET,
-    SNAKE;
+    SNAKE,
+    SNAKE_HEAD,
+    SNAKE_TAIL;
 
     public static Cell randomFood() {
         int n = ThreadLocalRandom.current().nextInt(0, 3);
